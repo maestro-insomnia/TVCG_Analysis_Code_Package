@@ -1,4 +1,4 @@
-# TVCG Analysis Code Package
+# 📊 TVCG Analysis Code Package
 
 Statistical analysis code for the TVCG manuscript **“Virtual Character-Mediated Communication in VR: Effects of Appearance Fidelity and Speech Fidelity.”**
 
