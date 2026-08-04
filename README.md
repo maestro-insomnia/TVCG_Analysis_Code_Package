@@ -57,7 +57,7 @@ For normal use, copy and edit a configuration file rather than modifying the ana
 
 ## Requirements
 
-A recent installation of R is required. RStudio is optional.
+The complete analysis workflow was tested successfully with R version 4.5.3. A recent installation of R is required, and RStudio is optional.
 
 The analysis uses these R packages:
 
@@ -67,7 +67,6 @@ c(
   "car", "ARTool", "emmeans", "ggplot2", "openxlsx", "fs", "rlang",
   "patchwork"
 )
-```
 
 The supplied configurations install missing CRAN packages automatically:
 
