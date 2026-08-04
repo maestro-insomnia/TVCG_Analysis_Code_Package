@@ -50,7 +50,7 @@ TVCG_Analysis_Code_Package/
 
 ## 3. R environment and packages
 
-A recent R installation is required. RStudio is optional.
+The complete analysis workflow was tested successfully with R version 4.5.3. A recent installation of R is required, and RStudio is optional.
 
 The engine uses:
 
