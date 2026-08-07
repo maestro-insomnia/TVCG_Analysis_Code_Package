@@ -281,6 +281,6 @@ The full configuration reference, data-format requirements, output-sheet descrip
 
 This repository accompanies the manuscript:
 
-> *Virtual Character-Mediated Communication in VR: Effects of Appearance Fidelity and Speech Fidelity.*
+> *Yu Han, Hao Sha, Tongtai Cao, Xin Wang, Yu Miao, Yue Liu, Huyen Nguyen, and Christian Sandor, “Virtual Character-Mediated Communication in VR: Effects of Appearance Fidelity and Speech Fidelity.”*
 
 Complete bibliographic and BibTeX information can be added here after publication.
