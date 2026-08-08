@@ -2,19 +2,19 @@
 
 Statistical analysis code for the TVCG manuscript **“Virtual Character-Mediated Communication in VR: Effects of Appearance Fidelity and Speech Fidelity.”**
 
-The repository provides a reusable R workflow for configurable two- or three-factor between-subjects experiments. For each dependent variable, the workflow can automatically select between factorial ANOVA and aligned rank transform ANOVA (ART-ANOVA), run follow-up comparisons, calculate effect sizes, generate a structured Excel workbook and multi-page PDF, and optionally conduct a unified Pearson or Spearman correlation analysis.
+The repository provides a reusable R workflow for configurable one-, two-, or three-factor between-subjects experiments. For each dependent variable, the workflow can automatically select between ANOVA and aligned rank transform ANOVA (ART-ANOVA), run follow-up comparisons, calculate effect sizes, generate a structured Excel workbook and multi-page PDF, and optionally conduct a unified Pearson or Spearman correlation analysis.
 
 > **Synthetic-data notice:** The example workbooks contain synthetic data only. They do not contain original participant data and are not intended to reproduce the numerical results reported in the manuscript.
 
 ## Features
 
-- Configurable **two- or three-factor between-subjects designs**.
+- Configurable **one-, two-, or three-factor between-subjects designs**.
 - Wide- and long-format input support.
 - Input files: `.xlsx`, `.xls`, `.csv`, `.tsv`, `.txt`, and `.rds`.
 - Automatic per-outcome selection between:
-  - Type III factorial ANOVA; and
+  - Type III ANOVA; and
   - ART-ANOVA.
-- Complete factorial models containing all enabled main effects and interactions.
+- Complete models containing every enabled main effect and all interactions that exist for multi-factor designs.
 - Residual Shapiro–Wilk and Levene assumption tests.
 - Partial eta-squared, Cohen's *f*, and qualitative effect-size labels.
 - Main-effect pairwise comparisons, interaction-cell comparisons, and interaction contrasts.
@@ -35,15 +35,18 @@ TVCG_Analysis_Code_Package/
 ├── TVCG_Factorial_ANOVA_ART_Analysis.R
 ├── run_example_1.R
 ├── run_example_2.R
+├── run_example_3.R
 ├── configs/
 │   ├── Config_Example_1_Default_TVCG.R
-│   ├── Config_Example_2_Alternative_Names.R
+│   ├── Config_Example_2_Single_Factor.R
+│   ├── Config_Example_3_Two_Factor.R
 │   └── Config_Template.R
 ├── docs/
 │   └── USAGE_GUIDE.md
 └── examples/
     ├── Example_Data_1_Default_TVCG_Format.xlsx
-    └── Example_Data_2_Alternative_Names.xlsx
+    ├── Example_Data_2_Single_Factor.xlsx
+    └── Example_Data_3_Two_Factor.xlsx
 ```
 
 Additional version-specific audit and update notes may also be retained in the code package.
@@ -67,6 +70,7 @@ c(
   "car", "ARTool", "emmeans", "ggplot2", "openxlsx", "fs", "rlang",
   "patchwork"
 )
+```
 
 The supplied configurations install missing CRAN packages automatically:
 
@@ -102,13 +106,21 @@ Command-line alternative:
 Rscript TVCG_Factorial_ANOVA_ART_Analysis.R configs/Config_Example_1_Default_TVCG.R
 ```
 
-### Example 2: alternative factor and outcome names
+### Example 2: single-factor synthetic data
 
 ```r
 source("run_example_2.R")
 ```
 
-This example demonstrates that the engine is not tied to the TVCG variable names.
+This example uses one three-level between-subjects factor and demonstrates that the engine automatically fits a one-factor model with no interaction analysis.
+
+### Example 3: two-factor synthetic data
+
+```r
+source("run_example_3.R")
+```
+
+This example uses a 2 × 3 between-subjects design and demonstrates automatic main-effect and two-way interaction analysis with factor and outcome names unrelated to the TVCG study.
 
 ## Using your own data
 
@@ -138,7 +150,7 @@ outcomes = data.frame(
 )
 ```
 
-- `enabled` controls factorial ANOVA/ART-ANOVA analysis.
+- `enabled` controls ANOVA/ART-ANOVA analysis.
 - `include_in_correlation` independently controls inclusion in the correlation matrix.
 
 See the [complete usage guide](docs/USAGE_GUIDE.md) for the input formats and full configuration reference.
@@ -150,13 +162,13 @@ For each enabled dependent variable, the engine:
 1. validates the configured factors, levels, columns, and design cells;
 2. converts the outcome to numeric and reports conversion issues;
 3. removes rows missing the outcome or an enabled factor for that outcome analysis;
-4. fits the complete factorial linear model;
+4. fits the complete model implied by the enabled factors;
 5. tests residual normality using Shapiro–Wilk;
 6. tests variance homogeneity using Levene's test;
 7. selects ANOVA or ART-ANOVA according to the configuration;
-8. exports all enabled main effects and interactions;
+8. exports all main effects and every interaction available for the enabled factor count;
 9. calculates effect sizes;
-10. runs main-effect and interaction follow-up analyses;
+10. runs main-effect follow-up analyses and, for multi-factor designs, interaction follow-up analyses;
 11. calculates descriptive statistics;
 12. optionally conducts the unified correlation analysis; and
 13. writes the Excel workbook, figures PDF, logs, and diagnostics.
@@ -183,15 +195,22 @@ or:
 method_selection = "art"
 ```
 
-### Complete factorial model
+### Complete model for one to three factors
 
-The engine always fits the complete factorial model for all enabled factors. With three enabled factors:
+The engine always fits the complete model implied by all enabled factors:
 
 ```r
+# One factor
+Y ~ X1
+
+# Two factors
+Y ~ X1 * X2
+
+# Three factors
 Y ~ X1 * X2 * X3
 ```
 
-This includes all main effects, two-way interactions, and the three-way interaction. The script does not suppress higher-order terms; the analyst decides which effects to emphasize in a manuscript.
+A one-factor model contains the single main effect only. Two- and three-factor models additionally contain all possible interactions. The script does not suppress higher-order terms; the analyst decides which effects to emphasize in a manuscript.
 
 ### Correlation analysis
 
@@ -247,21 +266,21 @@ The workbook contains 25 logically ordered worksheets covering:
 - PDF page indexing; and
 - captured warnings and errors.
 
-Every worksheet includes a right-side column-definition section.
+Every worksheet includes a right-side column-definition section. In one-factor analyses, interaction-specific worksheets are retained for a consistent workbook structure and report that no interaction results were generated.
 
 ### Figures PDF
 
 For each dependent variable, the PDF contains:
 
 - a main-effects page;
-- an interaction-effects page;
+- an interaction-effects page when at least two factors are enabled;
 - the method used for that dependent variable in the page title;
 - mean ± SD or mean ± SE plots;
 - omnibus *F*, *p*, and partial eta-squared annotations;
 - significant main-effect comparison brackets; and
 - captions summarizing interaction-contrast availability.
 
-Each category begins with a title page and significance key. When correlation analysis is enabled, the correlation heatmap is appended to the PDF.
+Each category begins with a title page and significance key. One-factor analyses contain main-effect pages only; interaction pages are created only for two- or three-factor designs. When correlation analysis is enabled, the correlation heatmap is appended to the PDF.
 
 ## Documentation
 
@@ -271,7 +290,7 @@ The full configuration reference, data-format requirements, output-sheet descrip
 
 ## Scope and limitations
 
-- The current engine supports exactly two or three enabled between-subject factors.
+- The current engine supports one, two, or three enabled between-subject factors.
 - It does not automatically fit repeated-measures or mixed-effects models.
 - Automatic method selection is a predefined reproducible rule, not a substitute for inspecting distributions, residuals, sparse cells, and model appropriateness.
 - ART effect sizes are calculated on aligned-rank responses and are labeled accordingly.
